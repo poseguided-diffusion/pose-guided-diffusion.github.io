@@ -1,1 +1,566 @@
-Hello World.
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="Consistent View Synthesis with Pose-Guided Diffusion Models">
+    <meta name="keywords" content="Diffusion; View Synthesis">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Consistent View Synthesis with Pose-Guided Diffusion Models</title>
+
+    <style>
+        ul {
+            padding-left: 2em;
+        }
+
+        a {
+            text-decoration: underline;
+            color: black;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: gray;
+        }
+
+        /* wrap long lines */
+        pre {
+            white-space: pre-wrap;
+            white-space: -moz-pre-wrap;
+            white-space: -o-pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+        }
+
+        pre {
+            border-left: 5px solid #eee;
+            padding-left: 5px;
+        }
+
+        @media only screen and (max-device-width: 480px) {
+            html {
+                background-color: white;
+            }
+
+            body {
+                width: 97%;
+                box-shadow: none;
+            }
+
+            body {
+                -webkit-text-size-adjust: 100%;
+                -moz-text-size-adjust: 100%;
+                -ms-text-size-adjust: 100%;
+            }
+
+            body {
+                font-size: 1.25em;
+                font-size: 2.1vw;
+                line-height: 1.6em;
+                line-height: 2.7vw;
+            }
+        }
+
+        @media print {
+            html {
+                background-color: white;
+            }
+
+            body {
+                width: 97%;
+                box-shadow: none;
+            }
+        }
+
+        button {
+            padding: 0.5em 0.75em;
+            margin: 0.4em 0.4em;
+            min-width: 16ch;
+            text-align: left;
+            background-color: #ddd;
+            color: #333;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+
+            @media screen and (-ms-high-contrast: active) {
+                border: 2px solid currentcolor;
+            }
+        }
+
+        button.on {
+            background-color: #333;
+            color: #bbb;
+        }
+
+        p.btncap {
+            margin: 0.4em 0.4em;
+            /* padding: 0 0.2em; */
+            color: #333;
+            border-bottom: 2px solid #333;
+            font-weight: bold;
+            font-style: italic;
+            font-size: 0.8em;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .desc {
+            margin: 1.5em 0.4em;
+        }
+
+        .wider_buttons button {
+            display: block;
+            min-width: 20.5ch;
+        }
+
+        button {
+            display: block;
+        }
+
+        video {
+            display: none;
+            width: 1080px;
+            height: 1080px;
+            margin: 0.4em;
+        }
+
+        video.on {
+            display: block;
+        }
+
+        .shadow {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+    </style>
+
+    <script>
+        class VideoHandler {
+            constructor(n_data, n_methods, databtn_id, vidbtn_id, vidtag_id) {
+                this.n_data = n_data;
+                this.n_methods = n_methods;
+
+                this.databtn_id = databtn_id;
+                this.vidbtn_id = vidbtn_id;
+                this.vidtag_id = vidtag_id;
+
+                this.current_data = 0;
+                this.current_method = 0;
+                this.re10k_data_count = 10;
+            }
+
+            get paused() {
+                return document.getElementById(this.vidtag_id + "0").paused;
+            }
+
+            sync_video(e) {
+                if (e === undefined) {
+                    return;
+                }
+                for (let i = 0; i < this.n_methods; i++) {
+                    let v = document.getElementById(this.vidtag_id + i.toString());
+                    if (v != e.currentTarget) {
+                        v.currentTime = e.currentTarget.currentTime;
+                    }
+                }
+            };
+
+            play_video(e) {
+                this.sync_video(e);
+                for (let i = 0; i < this.n_methods; i++) {
+                    document.getElementById(this.vidtag_id + i.toString()).play();
+                }
+            };
+
+            pause_video(e) {
+                for (let i = 0; i < this.n_methods; i++) {
+                    document.getElementById(this.vidtag_id + i.toString()).pause();
+                }
+                this.sync_video(e);
+            };
+
+            select_method(j) {
+                this.current_method = j;
+                if (this.current_dat > this.re10k_data_count && j == 3) {
+                    this.current_method = 0;
+                }
+
+                for (let i = 0; i < this.n_methods; i++) {
+                    //if (this.current_data > this.re10k_data_count && i == 3) {
+                    //    continue;
+                    //}
+
+                    let v = document.getElementById(this.vidtag_id + i.toString());
+                    let b = document.getElementById(this.vidbtn_id + i.toString());
+                    if (i == j) {
+                        b.className = "on";
+                        v.style.display = "block";
+                        v.addEventListener("play", this);
+                        v.addEventListener("pause", this);
+                        v.addEventListener("seeking", this);
+                        v.addEventListener("seeked", this);
+                        v.addEventListener("playing", this);
+                    } else {
+                        b.className = "";
+                        v.style.display = "none";
+                        v.removeEventListener("play", this);
+                        v.removeEventListener("pause", this);
+                        v.removeEventListener("seeking", this);
+                        v.removeEventListener("seeked", this);
+                        v.removeEventListener("playing", this);
+                    }
+                }
+            };
+
+            handleEvent(e) {
+                switch (e.type) {
+                    case "play": this.play_video(e); break;
+                    case "pause": this.pause_video(e); break;
+                    case "seeking": this.sync_video(e); break;
+                    case "seeked": this.sync_video(e); break;
+                    case "playing": this.sync_video(e); break;
+                }
+            }
+
+            select_data(j) {
+                this.current_data = j;
+                if (j > this.re10k_data_count && this.current_method == 3) {
+                    this.select_method(0);
+                }
+
+                let autoplay = !this.paused;
+                let data_name = document.getElementById(this.databtn_id + j.toString()).value;
+                for (let i = 0; i < this.n_data; i++) {
+                    document.getElementById(this.databtn_id + i.toString()).className = (i == j ? "on" : "");
+                }
+                for (let i = 0; i < this.n_methods; i++) {
+                    let video_name = document.getElementById(this.vidbtn_id + i.toString()).value;
+                    if (j > this.re10k_data_count && i == 3) {
+                        //video_name = "ours";
+                        continue;
+                    }
+                    let v = document.getElementById(this.vidtag_id + i.toString());
+                    v.src = "videos/" + data_name + "_" + video_name + ".mp4";
+                }
+                if (autoplay) {
+                    this.play_video();
+                }
+
+                let se3ds_btn = document.getElementById("cmp_btn3");
+                if(j > this.re10k_data_count) {
+                    se3ds_btn.disabled = true;
+                    se3ds_btn.style.textDecoration = "line-through";
+                }
+                else {
+                    se3ds_btn.disabled = false;
+                    se3ds_btn.style.textDecoration = "none";
+                }
+            };
+
+            register() {
+                for (let i = 0; i < this.n_data; i++) {
+                    document.getElementById(this.databtn_id + i.toString()).addEventListener("click", function () { this.select_data(i); }.bind(this, i));
+                }
+
+                for (let i = 0; i < this.n_methods; i++) {
+                    document.getElementById(this.vidbtn_id + i.toString()).addEventListener("click", function () { this.select_method(i); }.bind(this, i));
+                }
+
+                for (let i = 0; i < this.n_methods; i++) {
+                    document.getElementById(this.vidtag_id + i.toString()).muted = true;
+                }
+
+                //this.select_video(0);
+            }
+        }
+
+        window.onload = function () {
+            cmp_handler = new VideoHandler(18, 5, "cmp_data", "cmp_btn", "cmp_vid");
+            cmp_handler.register();
+            cmp_handler.play_video();
+        };
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-AAAAAAAAA"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-PYVRSFMDRL');
+    </script>
+
+    <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+    <link rel="stylesheet" href="./static/css/bulma.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/fontawesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="stylesheet" href="./static/css/index.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+</head>
+
+<body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+    </nav>
+
+
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container is-max-desktop">
+                <div class="columns is-centered">
+                    <div class="column has-text-centered">
+                        <h1 class="title is-2 publication-title">Consistent View Synthesis with Pose-Guided Diffusion
+                            Models</h1>
+                        <div class="is-size-5 publication-authors">
+                            <span class="author-block">
+                                <a href="https://hytseng0509.github.io/" target="_blank">Hung-Yu Tseng</a>,&nbsp;</span>
+                            <span class="author-block">
+                                <a href="https://www.qinboli.com/" target="_blank">Qinbo Li</a>,&nbsp;</span>
+                            <span class="author-block">
+                                <a href="https://changilkim.com/" target="_blank">Changil Kim</a>,&nbsp;
+                            </span>
+                            <span class="author-block">
+                                <a href="#">Suhib Alsisan</a>,&nbsp;
+                            </span>
+                            <span class="author-block">
+                                <a href="https://jbhuang0604.github.io/" target="_blank">Jia-Bin Huang</a>,&nbsp;
+                            </span>
+                            <span class="author-block">
+                                <a href="http://johanneskopf.de/" target="_blank">Johannes Kopf</a>
+                            </span>
+                        </div>
+
+                        <div class="is-size-5 publication-authors">
+                            <span class="author-block">Reality Labs, Meta</span>
+                        </div>
+
+                        <div class="column has-text-centered">
+                            <div class="publication-links">
+                                <!-- PDF Link. -->
+                                <span class="link-block">
+                                    <a href="#" class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </span>
+                                        <span>Paper</span>
+                                    </a>
+                                </span>
+                                <span class="link-block">
+                                    <a href="#" class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="ai ai-arxiv"></i>
+                                        </span>
+                                        <span>arXiv</span>
+                                    </a>
+                                </span>
+                                <!-- Code Link. -->
+                                <span class="link-block">
+                                    <a href="#" class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="fab fa-github"></i>
+                                        </span>
+                                        <span>Code</span>
+                                    </a>
+                                </span>
+                                <!-- Colab Link. -->
+                                <span class="link-block">
+                                    <a href="#" class="external-link button is-normal is-rounded is-dark">
+                                        <span class="icon">
+                                            <i class="ai ai-coursera"></i>
+                                        </span>
+                                        <span>Colab</span>
+                                    </a>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="hero teaser">
+        <div class="container is-max-desktop">
+            <div class="hero-body">
+                <img src="static/images/teaser_v1.png" alt="teaser" class="inline" />
+                <h2 class="subtitle has-text-centered">
+                    Consistent view synthesis via pose-guided diffusion model
+                </h2>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="section" style="padding-top: 20px;">
+        <div class="container is-max-desktop">
+
+            <!-- Paper video. -->
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                    <h2 class="title is-3">Video</h2>
+                    <div class="publication-video">
+                        <iframe src="./videos/main_video.mp4" frameborder="0" allow="autoplay; encrypted-media"
+                            allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+            <!--/ Paper video. -->
+
+            <!-- Abstract. -->
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                    <h2 class="title is-3">Abstract</h2>
+                    <div class="content has-text-justified">
+                        <p>
+                            Novel view synthesis from a single image has been a
+                            cornerstone problem for many Virtual Reality applications
+                            that provide immersive experiences. However, most existing
+                            techniques can only synthesize novel views within a
+                            limited range of camera motion or fail to generate consistent
+                            and high-quality novel views under significant camera
+                            movement. In this work, we propose a pose-guided diffusion
+                            model to generate a consistent long-term video of novel
+                            views from a single image. We design an attention layer that
+                            uses epipolar lines as constraints to facilitate the association
+                            between different viewpoints. Experimental results on
+                            synthetic and real-world datasets demonstrate the effectiveness
+                            of the proposed diffusion model against state-of-the-art
+                            transformer-based and GAN-based approaches.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!--/ Abstract. -->
+
+        </div>
+    </section>
+
+
+    <div class="container is-max-desktop content">
+        <h2 class="title is-3">Comparisons</h2>
+        <div class="flex">
+            <div>
+                <div class="flex">
+                    <div>
+                        <p class="btncap">RealEstate10K</p>
+                        <button id="cmp_data0" value="re10k_008" class="on">Living room 1</button>
+                        <button id="cmp_data1" value="re10k_016">Bedroom</button>
+                        <button id="cmp_data2" value="re10k_026">Living room 2</button>
+                        <button id="cmp_data3" value="re10k_031">Hallway</button>
+                        <button id="cmp_data4" value="re10k_476">Kitchen 1</button>
+                        <button id="cmp_data5" value="re10k_035">Outdoor 1</button>
+                        <button id="cmp_data6" value="re10k_099">Dining room 1</button>
+                        <button id="cmp_data7" value="re10k_102">Dining room 2</button>
+                        <button id="cmp_data8" value="re10k_175">Kitchen 2</button>
+                        <button id="cmp_data9" value="re10k_245">Outdoor 2</button>
+                        <button id="cmp_data10" value="re10k_328">Living room 3</button>
+                        <p class="btncap">MatterPort3D</p>
+                        <button id="cmp_data11" value="mp3d_013">Bedroom</button>
+                        <button id="cmp_data12" value="mp3d_019">Window</button>
+                        <button id="cmp_data13" value="mp3d_032">Living room</button>
+                        <button id="cmp_data14" value="mp3d_036">Hallway</button>
+                        <button id="cmp_data15" value="mp3d_038">Cabinate</button>
+                        <button id="cmp_data16" value="mp3d_049">Archway 1</button>
+                        <button id="cmp_data17" value="mp3d_065">Archway 2</button>
+                    </div>
+                    <div class="wider_buttons">
+                        <p class="btncap">Methods</p>
+                        <button id="cmp_btn0" value="ours" class="on">Ours</button>
+                        <button id="cmp_btn1" value="geogpt">GeoGPT</button>
+                        <button id="cmp_btn2" value="lor">LoR</button>
+                        <button id="cmp_btn3" value="se3ds">SE3DS</button>
+                        <button id="cmp_btn4" value="gt">GT</button>
+                    </div>
+                </div>
+                <div class="desc">
+                    <p><b>Datasets.</b> We use the <a href="https://google.github.io/realestate10k/">RealEstate10K</a>
+                        datset and the <a href="https://niessner.github.io/Matterport/">MatterPort3D</a> dataset for
+                        comparisons.</p>
+                    <p><b>Baselines.</b> We compare our apporach with <a
+                            href="https://compvis.github.io/geometry-free-view-synthesis/">GeoGPT</a>, <a
+                            href="https://xrenaa.github.io/look-outside-room/">LoR</a>, <a
+                            href="https://github.com/google-research/se3ds">SE3DS</a>.</p>
+                </div>
+            </div>
+            <div>
+                <video id="cmp_vid0" controls loop class="on">
+                    <source src="videos/re10k_008_ours.mp4" type="video/mp4" loop autoplay muted />
+                </video>
+                <video id="cmp_vid1" controls loop>
+                    <source src="videos/re10k_008_geogpt.mp4" type="video/mp4" loop autoplay muted />
+                </video>
+                <video id="cmp_vid2" controls loop>
+                    <source src="videos/re10k_008_lor.mp4" type="video/mp4" loop autoplay muted />
+                </video>
+                <video id="cmp_vid3" controls loop>
+                    <source src="videos/re10k_008_se3ds.mp4" type="video/mp4" loop autoplay muted />
+                </video>
+                <video id="cmp_vid4" controls loop>
+                    <source src="videos/re10k_008_gt.mp4" type="video/mp4" loop autoplay muted />
+                </video>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <section class="section" id="BibTeX">
+        <div class="container is-max-desktop content">
+            <h2 class="title">BibTeX</h2>
+            <pre>
+                <code>
+                    @article{tseng2023cvs,
+                        author    = {Tseng, Hung-Yu and Li, Qinbo and Kim, Changil and Alsisan, Suhib and Huang, Jia-Bin and Kopf, Johannes},
+                        title     = {Consistent View Synthesis with Pose-Guided Diffusion Models},
+                        journal   = {CVPR},
+                        year      = {2023},
+                    }
+                </code>
+            </pre>
+        </div>
+    </section>
+
+
+    <footer class="footer">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-8">
+                    <div class="content has-text-centered">
+                        <p>
+                            This great <a href="https://github.com/nerfies/nerfies.github.io">template</a> was
+                            originally made by <a href="https://github.com/nerfies/nerfies.github.io">Keunhong Park</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
