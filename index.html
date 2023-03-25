@@ -126,8 +126,8 @@
 
         video {
             display: none;
-            width: 256px;
-            height: 256px;
+            width: 512px;
+            height: 512px;
             margin: 0.4em;
         }
 
@@ -424,6 +424,7 @@
         <div class="container is-max-desktop">
 
             <!-- Paper video. -->
+            <!--
             <div class="columns is-centered has-text-centered">
                 <div class="column is-four-fifths">
                     <h2 class="title is-3">Video</h2>
@@ -433,6 +434,7 @@
                     </div>
                 </div>
             </div>
+            -->
             <!--/ Paper video. -->
 
             <!-- Abstract. -->
@@ -460,6 +462,19 @@
                 </div>
             </div>
             <!--/ Abstract. -->
+
+            <!-- Overview. -->
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                    <h2 class="title is-3">Pose-Guided Diffusion Model</h2>
+                </div>
+            </div>
+            <center><img src="./static/images/method.jpg"/></center>
+            <p>
+            With the proposed epipolar attention that associates the target view with the source view features,
+            the pose-guided diffusion model learns to de-noise the target view from the input source view and relative pose.
+            </p>
+            <!--/ Overview. -->
 
         </div>
     </section>
