@@ -75,7 +75,7 @@
         button {
             padding: 0.5em 0.75em;
             margin: 0.4em 0.4em;
-            min-width: 16ch;
+            min-width: 18ch;
             text-align: left;
             background-color: #ddd;
             color: #333;
@@ -90,12 +90,12 @@
 
         button.on {
             background-color: #333;
-            color: #bbb;
+            color: #eee; /*#bbb;*/
         }
 
         p.btncap {
             margin: 0.4em 0.4em;
-            /* padding: 0 0.2em; */
+            padding: 0 0.2em;
             color: #333;
             border-bottom: 2px solid #333;
             font-weight: bold;
@@ -120,15 +120,44 @@
             min-width: 20.5ch;
         }
 
+        .dropbtn {
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {background-color: #ddd;}
+
+        .dropdown:hover .dropdown-content {display: block;}
+
+        .dropdown:hover .dropbtn {background-color: #aaaaaa;}
+
         button {
             display: block;
         }
 
         video {
             display: none;
-            width: 256px;
-            height: 256px;
-            margin: 0.4em;
+            width: 360px;
+            height: 360px;
+            margin: auto; /*0.4em;*/
         }
 
         video.on {
@@ -333,7 +362,7 @@
             <div class="container is-max-desktop">
                 <div class="columns is-centered">
                     <div class="column has-text-centered">
-                        <h1 class="title is-2 publication-title">Consistent View Synthesis with Pose-Guided Diffusion
+                        <h1 class="title is-2 publication-title">Consistent View Synthesis<br>with Pose-Guided Diffusion
                             Models</h1>
                         <div class="is-size-5 publication-authors">
                             <span class="author-block">
@@ -413,7 +442,7 @@
             <div class="hero-body">
                 <img src="static/images/teaser_v1.png" alt="teaser" class="inline" />
                 <h2 class="subtitle has-text-centered">
-                    Pose-guided diffusion model synthesizes consistent novel views from single image.
+                    <font size="-1"> Pose-guided diffusion model synthesizes consistent novel views from single image. </font>
                 </h2>
             </div>
         </div>
@@ -462,27 +491,94 @@
                 </div>
             </div>
             <!--/ Abstract. -->
-
-            <!-- Overview. -->
-            <div class="columns is-centered has-text-centered">
-                <div class="column is-four-fifths">
-                    <h2 class="title is-3">Pose-Guided Diffusion Model</h2>
-                </div>
-            </div>
-            <center><img src="./static/images/method.jpg"/></center>
-            <p>
-            With the proposed epipolar attention that associates the target view with the source view features,
-            the pose-guided diffusion model learns to de-noise the target view from the input source view and relative pose.
-            </p>
-            <!--/ Overview. -->
-
         </div>
     </section>
 
+    <div class="container is-max-desktop content">
+        <h2 class="title is-3">Pose-Guided Diffusion Model</h2>
+        <center><img src="./static/images/method.jpg"/></center>
+        <p>
+        With the proposed epipolar attention that associates the target view with the source view features,
+            the pose-guided diffusion model learns to de-noise the target view from the input source view and relative pose.
+        </p>
+    </div>
+    <br>
+
+    <div class="container is-max-desktop content">
+        <h2 class="title is-3">Quality vs. Consistency</h2>
+        <center><img src="./static/images/quant.png"/></center>
+        <p>
+        We show the FID of the last frames (per-frame quality) and flow-warping errors (consistency) given different generated video lengths {4, 8, ..., 20}.
+        Our method generates not only realistic but also consistent novel views.
+        </p>
+    </div>
+    <br>
 
     <div class="container is-max-desktop content">
         <h2 class="title is-3">Comparisons</h2>
         <div class="flex">
+            <div class="dropdown">
+                <button class="dropbtn">Sequence</button>
+                <div class="dropdown-content">
+                    <button id="cmp_data0" value="re10k_031" class="on">Re10K Hallway</button>
+                    <button id="cmp_data1" value="re10k_008">Re10K Living room 1</button>
+                    <button id="cmp_data2" value="re10k_016">Re10K Bedroom</button>
+                    <button id="cmp_data3" value="re10k_026">Re10K Living room 2</button>
+                    <button id="cmp_data4" value="re10k_476">Re10K Kitchen 1</button>
+                    <button id="cmp_data5" value="re10k_035">Re10K Outdoor 1</button>
+                    <button id="cmp_data6" value="re10k_099">Re10K Dining room 1</button>
+                    <button id="cmp_data7" value="re10k_102">Re10K Dining room 2</button>
+                    <button id="cmp_data8" value="re10k_175">Re10K Kitchen 2</button>
+                    <button id="cmp_data9" value="re10k_245">Re10K Outdoor 2</button>
+                    <button id="cmp_data10" value="re10k_328">Re10K Living room 3</button>
+                    <button id="cmp_data11" value="mp3d_013">MP3D Bedroom</button>
+                    <button id="cmp_data12" value="mp3d_019">MP3D Window</button>
+                    <button id="cmp_data13" value="mp3d_032">MP3D Living room</button>
+                    <button id="cmp_data14" value="mp3d_036">MP3D Hallway</button>
+                    <button id="cmp_data15" value="mp3d_038">MP3D Cabinate</button>
+                    <button id="cmp_data16" value="mp3d_049">MP3D Archway 1</button>
+                    <button id="cmp_data17" value="mp3d_065">MP3D Archway 2</button>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">Method</button>
+                <div class="dropdown-content">
+                    <button id="cmp_btn0" value="ours" class="on">Ours</button>
+                    <button id="cmp_btn1" value="geogpt">GeoGPT</button>
+                    <button id="cmp_btn2" value="lor">LoR</button>
+                    <button id="cmp_btn3" value="se3ds">SE3DS</button>
+                    <button id="cmp_btn4" value="gt">Ground truth</button>
+                </div>
+            </div>
+        </div>
+        <center>
+        <video id="cmp_vid0" controls loop autoplay muted class="on">
+            <source src="videos/re10k_031_ours.mp4" type="video/mp4"/>
+        </video>
+        <video id="cmp_vid1" controls loop>
+            <source src="videos/re10k_031_geogpt.mp4" type="video/mp4" autoplay muted/>
+        </video>
+        <video id="cmp_vid2" controls loop>
+            <source src="videos/re10k_031_lor.mp4" type="video/mp4" autoplay muted/>
+        </video>
+        <video id="cmp_vid3" controls loop>
+            <source src="videos/re10k_031_se3ds.mp4" type="video/mp4" autoplay muted/>
+        </video>
+        <video id="cmp_vid4" controls loop>
+            <source src="videos/re10k_031_gt.mp4" type="video/mp4" autoplay muted/>
+        </video>
+        </center>
+        <br>
+        <p>
+            We show the comparisons between our method, 
+            <a href="https://compvis.github.io/geometry-free-view-synthesis/">GeoGPT</a>, 
+            <a href="https://xrenaa.github.io/look-outside-room/">LoR</a>, and
+            <a href="https://github.com/google-research/se3ds">SE3DS</a> on the 
+            <a href="https://google.github.io/realestate10k/">RealEstate10K</a> 
+            and <a href="https://niessner.github.io/Matterport/">MatterPort3D</a> datasets.
+        </p>
+    </div>
+        <!-- <div class="flex">
             <div>
                 <div class="flex">
                     <div>
@@ -543,9 +639,9 @@
                     <source src="videos/re10k_008_gt.mp4" type="video/mp4" loop autoplay muted/>
                 </video>
             </div>
-        </div>
+        </div> 
     </div>
-    </div>
+    </div>-->
 
     <section class="section" id="BibTeX">
         <div class="container is-max-desktop content">
