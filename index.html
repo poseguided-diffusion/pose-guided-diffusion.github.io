@@ -495,7 +495,7 @@
     </section>
 
     <div class="container is-max-desktop content">
-        <h2 class="title is-3">Pose-Guided Diffusion Model</h2>
+        <h2 class="title is-3">Pose-guided diffusion model</h2>
         <center><img src="./static/images/method.jpg"/></center>
         <p>
         With the proposed epipolar attention that associates the target view with the source view features,
@@ -505,7 +505,7 @@
     <br>
 
     <div class="container is-max-desktop content">
-        <h2 class="title is-3">Quality vs. Consistency</h2>
+        <h2 class="title is-3">Quality vs. consistency</h2>
         <center><img src="./static/images/quant.png"/></center>
         <p>
         We show the FID of the last frames (per-frame quality) and flow-warping errors (consistency) given different generated video lengths {4, 8, ..., 20}.
@@ -578,70 +578,17 @@
             and <a href="https://niessner.github.io/Matterport/">MatterPort3D</a> datasets.
         </p>
     </div>
-        <!-- <div class="flex">
-            <div>
-                <div class="flex">
-                    <div>
-                        <p class="btncap">RealEstate10K</p>
-                        <button id="cmp_data0" value="re10k_031" class="on">Hallway</button>
-                        <button id="cmp_data1" value="re10k_008">Living room 1</button>
-                        <button id="cmp_data2" value="re10k_016">Bedroom</button>
-                        <button id="cmp_data3" value="re10k_026">Living room 2</button>
-                        <button id="cmp_data4" value="re10k_476">Kitchen 1</button>
-                        <button id="cmp_data5" value="re10k_035">Outdoor 1</button>
-                        <button id="cmp_data6" value="re10k_099">Dining room 1</button>
-                        <button id="cmp_data7" value="re10k_102">Dining room 2</button>
-                        <button id="cmp_data8" value="re10k_175">Kitchen 2</button>
-                        <button id="cmp_data9" value="re10k_245">Outdoor 2</button>
-                        <button id="cmp_data10" value="re10k_328">Living room 3</button>
-                        <p class="btncap">MatterPort3D</p>
-                        <button id="cmp_data11" value="mp3d_013">Bedroom</button>
-                        <button id="cmp_data12" value="mp3d_019">Window</button>
-                        <button id="cmp_data13" value="mp3d_032">Living room</button>
-                        <button id="cmp_data14" value="mp3d_036">Hallway</button>
-                        <button id="cmp_data15" value="mp3d_038">Cabinate</button>
-                        <button id="cmp_data16" value="mp3d_049">Archway 1</button>
-                        <button id="cmp_data17" value="mp3d_065">Archway 2</button>
-                    </div>
-                    <div class="wider_buttons">
-                        <p class="btncap">Methods</p>
-                        <button id="cmp_btn0" value="ours" class="on">Ours</button>
-                        <button id="cmp_btn1" value="geogpt">GeoGPT</button>
-                        <button id="cmp_btn2" value="lor">LoR</button>
-                        <button id="cmp_btn3" value="se3ds">SE3DS</button>
-                        <button id="cmp_btn4" value="gt">Ground truth</button>
-                    </div>
-                </div>
-                <div class="desc">
-                    <p><b>Datasets.</b> We use the <a href="https://google.github.io/realestate10k/">RealEstate10K</a>
-                        datset and the <a href="https://niessner.github.io/Matterport/">MatterPort3D</a> dataset for
-                        comparisons.</p>
-                    <p><b>Baselines.</b> We compare our apporach with <a
-                            href="https://compvis.github.io/geometry-free-view-synthesis/">GeoGPT</a>, <a
-                            href="https://xrenaa.github.io/look-outside-room/">LoR</a>, <a
-                            href="https://github.com/google-research/se3ds">SE3DS</a>.</p>
-                </div>
-            </div>
-            <div>
-                <video id="cmp_vid0" controls loop class="on">
-                    <source src="videos/re10k_008_ours.mp4" type="video/mp4" loop autoplay muted/>
-                </video>
-                <video id="cmp_vid1" controls loop>
-                    <source src="videos/re10k_008_geogpt.mp4" type="video/mp4" loop autoplay muted/>
-                </video>
-                <video id="cmp_vid2" controls loop>
-                    <source src="videos/re10k_008_lor.mp4" type="video/mp4" loop autoplay muted/>
-                </video>
-                <video id="cmp_vid3" controls loop>
-                    <source src="videos/re10k_008_se3ds.mp4" type="video/mp4" loop autoplay muted/>
-                </video>
-                <video id="cmp_vid4" controls loop>
-                    <source src="videos/re10k_008_gt.mp4" type="video/mp4" loop autoplay muted/>
-                </video>
-            </div>
-        </div> 
+    <br>
+
+    <div class="container is-max-desktop content">
+        <h2 class="title is-3">Reference</h2>
+        [<a href="https://compvis.github.io/geometry-free-view-synthesis/">GeoGPT</a>]&nbsp;Geometry-Free View Synthesis: Transformers and no 3D Priors<br>
+        [<a href="https://xrenaa.github.io/look-outside-room/">LoR</a>]&nbsp;Look Outside the Room: Synthesizing A Consistent Long-Term 3D Scene Video from a Single Image<br>
+        [<a href="https://github.com/google-research/se3ds">SE3DS</a>]&nbsp;Simple and Effective Synthesis of Indoor 3D Scenes<br>
+        [<a href="https://google.github.io/realestate10k/">RealEstate10K</a>]&nbsp;Stereo Magnification: Learning View Synthesis using Multiplane Images<br>
+        [<a href="https://niessner.github.io/Matterport/">MatterPort3D</a>]&nbsp;Matterport3D: Learning from RGB-D Data in Indoor Environments
     </div>
-    </div>-->
+    <br>
 
     <section class="section" id="BibTeX">
         <div class="container is-max-desktop content">
